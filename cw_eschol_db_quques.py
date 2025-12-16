@@ -4,6 +4,7 @@ from time import time
 import json
 
 session = boto3.Session()
+verbose = False
 
 
 # =======================================
@@ -16,6 +17,9 @@ def main():
         # Transforms the queue values to a single dict
         counts_by_queue = {
             i['queue']: i['count'] for i in queue_values}
+
+        if verbose:
+            print(counts_by_queue)
 
         send_to_cloudwatch(environment, counts_by_queue)
 
@@ -39,7 +43,8 @@ def send_to_cloudwatch(environment, counts_by_queue):
         logStreamName=log_stream,
         logEvents=log_events)
 
-    print(response)
+    if verbose:
+        print(response)
 
 
 # =======================================
@@ -58,7 +63,8 @@ def get_queue_values(creds):
             "from queues group by queue;"
 
     with mysql_conn.cursor() as cursor:
-        print("Connected to eSchol MySQL DB. Sending Query.")
+        if verbose:
+            print("Connected to eSchol MySQL DB. Sending Query.")
         cursor.execute(query)
         queue_values = cursor.fetchall()
 

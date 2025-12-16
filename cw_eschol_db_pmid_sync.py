@@ -4,6 +4,7 @@ from time import time
 import json
 
 session = boto3.Session()
+verbose = False
 
 
 # =======================================
@@ -12,6 +13,10 @@ def main():
     for environment in environments:
         creds = get_creds(environment)
         pmid_count = get_pmid_count(creds)
+
+        if verbose:
+            print(pmid_count)
+
         send_to_cloudwatch(environment, pmid_count)
 
 
@@ -34,7 +39,8 @@ def send_to_cloudwatch(environment, pmid_count):
         logStreamName=log_stream,
         logEvents=log_events)
 
-    print(response)
+    if verbose:
+        print(response)
 
 
 # =======================================
@@ -53,7 +59,8 @@ def get_pmid_count(creds):
             "where attrs->>\"$.local_ids\" like '%pmid%';"
 
     with mysql_conn.cursor() as cursor:
-        print("Connected to eSchol MySQL DB. Sending Query.")
+        if verbose:
+            print("Connected to eSchol MySQL DB. Sending Query.")
         cursor.execute(query)
         queue_values = cursor.fetchone()
 
