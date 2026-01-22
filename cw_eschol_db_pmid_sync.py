@@ -33,7 +33,8 @@ def get_pmid_count(environment):
             "where attrs->>\"$.local_ids\" like '%pmid%';"
 
     # Get connection and send query
-    conn = eschol_db.get_connection(env=environment)
+    db = 'eschol' if environment == 'prod' else 'eschol-test'
+    conn = eschol_db.get_connection(env=environment, database=db)
     with conn.cursor() as cursor:
         cursor.execute(query)
         queue_values = cursor.fetchone()
