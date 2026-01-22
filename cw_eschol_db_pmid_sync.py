@@ -37,10 +37,10 @@ def get_pmid_count(environment):
     conn = eschol_db.get_connection(env=environment, database=db)
     with conn.cursor() as cursor:
         cursor.execute(query)
-        queue_values = cursor.fetchone()
+        pmid_count = cursor.fetchone()
     conn.close()
 
-    return queue_values
+    return pmid_count
 
 
 # =======================================
