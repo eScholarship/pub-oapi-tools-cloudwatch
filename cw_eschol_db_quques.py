@@ -22,6 +22,26 @@ def main():
 
 
 # =======================================
+# connect to mysql DB, get queue values
+def get_queue_values(environment):
+    query = "select queue, count(item_id) `count` from queues group by queue;"
+
+    # Get connection and send query
+    db = 'eschol' if environment == 'prod' else 'eschol-test'
+    conn = eschol_db.get_connection(
+        env=environment,
+        database=db,
+        quiet=True)
+
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        queue_values = cursor.fetchall()
+    conn.close()
+
+    return queue_values
+
+
+# =======================================
 def send_to_cloudwatch(environment, counts_by_queue):
     timestamp = int(time() * 1000)
     log_entry = json.dumps(counts_by_queue)
@@ -32,23 +52,8 @@ def send_to_cloudwatch(environment, counts_by_queue):
     aws_cloudwatch_logs.put_logs(
         log_group="pub-oapi-tools/eschol-db-monitoring",
         log_stream=f"queues-{environment}",
-        log_events=log_events)
-
-
-# =======================================
-# connect to mysql DB, get queue values
-def get_queue_values(environment):
-    query = "select queue, count(item_id) `count` from queues group by queue;"
-
-    # Get connection and send query
-    db = 'eschol' if environment == 'prod' else 'eschol-test'
-    conn = eschol_db.get_connection(env=environment, database=db)
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        queue_values = cursor.fetchall()
-    conn.close()
-
-    return queue_values
+        log_events=log_events,
+        quiet=True)
 
 
 # =======================================

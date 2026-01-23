@@ -23,7 +23,8 @@ def send_to_cloudwatch(environment, pmid_count):
     aws_cloudwatch_logs.put_logs(
         log_group="pub-oapi-tools/eschol-db-monitoring",
         log_stream=f"pmid-count-{environment}",
-        log_events=log_events)
+        log_events=log_events,
+        quiet=True)
 
 
 # =======================================
