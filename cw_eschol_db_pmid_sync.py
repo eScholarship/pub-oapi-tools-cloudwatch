@@ -35,10 +35,15 @@ def get_pmid_count(environment):
 
     # Get connection and send query
     db = 'eschol' if environment == 'prod' else 'eschol-test'
-    conn = eschol_db.get_connection(env=environment, database=db)
+    conn = eschol_db.get_connection(
+        env=environment,
+        database=db,
+        quiet=True)
+
     with conn.cursor() as cursor:
         cursor.execute(query)
         pmid_count = cursor.fetchone()
+
     conn.close()
 
     return pmid_count
