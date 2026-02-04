@@ -1,10 +1,16 @@
+"""
+A small program for getting eSchol's queues into CloudWatch metrics.
+1. Connects to the eSchol DB and queries for queues
+2. Packages the queues into CW Metrics' ingest format
+3. Sends 'em to CW.
+"""
+
 from pub_oapi_tools_common import eschol_db
 from pub_oapi_tools_common import aws_cloudwatch_metrics
 
 verbose = False
 
 
-# =======================================
 def main():
     metrics_namespace = "ESCHOLARSHIP/QUEUES"
     eschol_environments = ['staging', 'prod']
@@ -15,7 +21,6 @@ def main():
         send_to_cloudwatch(metrics_namespace, metrics_data)
 
 
-# =======================================
 # connect to mysql DB, get queue values
 def get_queue_values(env):
     query = "select queue, count(item_id) `count` from queues group by queue;"
@@ -65,7 +70,6 @@ def send_to_cloudwatch(metrics_namespace, metrics_data):
         metrics_data=metrics_data)
 
 
-# =======================================
 # Stub for main
 if __name__ == "__main__":
     main()
